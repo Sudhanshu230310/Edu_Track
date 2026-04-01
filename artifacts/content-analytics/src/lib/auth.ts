@@ -46,7 +46,9 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
   if (token) {
     headers["Authorization"] = `Bearer ${token}`;
   }
-  const url = API_BASE_URL && path.startsWith("/api") ? `${API_BASE_URL}${path}` : path;
+  const cleanBaseUrl = API_BASE_URL.replace(/\/$/, "");
+  const cleanPath = path.startsWith("/") ? path : `/${path}`;
+  const url = cleanBaseUrl && path.startsWith("/api") ? `${cleanBaseUrl}${cleanPath}` : path;
   let res: Response;
   try {
     res = await fetch(url, { ...options, headers });
