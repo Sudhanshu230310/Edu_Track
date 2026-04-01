@@ -2,7 +2,7 @@ services:
   - type: web
     name: edutrack
     runtime: node
-    buildCommand: pnpm install && pnpm build
+    buildCommand: pnpm install --no-frozen-lockfile
     startCommand: pnpm start
     envVars:
       - key: NODE_ENV
