@@ -1,0 +1,235 @@
+Build a Content Analytics Platform — a full-stack web app using Next.js (App Router), Node.js API routes, and PostgreSQL.
+
+---
+
+## PROJECT STRUCTURE
+
+Single Next.js app with:
+- /app — frontend pages (App Router)
+- /app/api — backend API routes
+- /lib — db client, helpers
+- /components — reusable UI components
+
+---
+
+## DATABASE SCHEMA (PostgreSQL)
+
+Create these tables:
+
+-- Content hierarchy
+CREATE TABLE books (
+  id SERIAL PRIMARY KEY,
+  title TEXT NOT NULL,
+  description TEXT,
+  cover_url TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE chapters (
+  id SERIAL PRIMARY KEY,
+  book_id INT REFERENCES books(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  order_index INT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE contents (
+  id SERIAL PRIMARY KEY,
+  chapter_id INT REFERENCES chapters(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  body TEXT,
+  video_url TEXT,
+  video_id TEXT,
+  order_index INT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Analytics tables
+CREATE TABLE button_clicks (
+  id BIGSERIAL PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  button_label TEXT NOT NULL,
+  content_id INT REFERENCES contents(id),
+  clicked_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE video_watch_events (
+  id BIGSERIAL PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  video_id TEXT NOT NULL,
+  content_id INT REFERENCES contents(id),
+  watched_seconds INT NOT NULL,
+  recorded_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE content_scroll_depth (
+  id BIGSERIAL PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  content_id INT REFERENCES contents(id),
+  max_scroll_percent INT NOT NULL,
+  recorded_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Indexes for analytics query performance
+CREATE INDEX idx_button_clicks_content ON button_clicks(content_id);
+CREATE INDEX idx_button_clicks_label ON button_clicks(button_label);
+CREATE INDEX idx_video_watch_content ON video_watch_events(content_id);
+CREATE INDEX idx_video_watch_video ON video_watch_events(video_id);
+CREATE INDEX idx_scroll_content ON content_scroll_depth(content_id);
+
+---
+
+## SEED DATA
+
+Insert this seed data on first run (check if books table is empty first):
+
+Books: "Introduction to Computer Science", "Web Development Fundamentals", "Data Structures & Algorithms"
+
+Each book: 3 chapters. Each chapter: 2 content pages.
+
+Each content page has:
+- A body of 3-4 paragraphs of realistic educational text
+- video_url: "https://www.youtube.com/embed/dQw4w9WgXcQ" (placeholder)
+- video_id: "video_" + content id
+
+---
+
+## FRONTEND PAGES
+
+### / (Home)
+- List all books as cards with title, description, chapter count
+- Clean, modern UI using Tailwind CSS
+- Each card links to /books/[id]
+
+### /books/[id]
+- Show book title and all chapters
+- Each chapter expandable to show content list
+- Links to /content/[id]
+
+### /content/[id] — THE KEY PAGE
+This page must:
+1. Display content title and body text
+2. Embed a YouTube video player (use youtube_url from DB)
+3. Show 3 interactive buttons:
+   - "Mark as Complete" (green)
+   - "Take Quiz" (blue)  
+   - "Download Notes" (gray)
+4. On each button click: POST to /api/analytics/button-click with { button_label, content_id }
+5. Track video watch time: use YouTube IFrame API, record watched_seconds every 30s and on pause/unload via POST to /api/analytics/video-watch
+6. Track scroll depth: record max scroll % on scroll events (debounced), POST to /api/analytics/scroll-depth on unload
+7. Generate/persist a user_id using localStorage (random UUID on first visit)
+8. Breadcrumb: Book → Chapter → Content
+
+### /analytics — DASHBOARD
+Show three sections:
+
+Section 1 — Button Clicks
+- Table: button_label | content_title | click_count
+- Query: SELECT button_label, content_id, COUNT(*) FROM button_clicks GROUP BY button_label, content_id
+- Bar chart using recharts
+
+Section 2 — Video Watch Time
+- Table: video_id | content_title | total_seconds | avg_seconds | session_count
+- Query: SELECT video_id, content_id, SUM(watched_seconds), AVG(watched_seconds), COUNT(*) FROM video_watch_events GROUP BY video_id, content_id
+
+Section 3 — Scroll Depth (third analytic)
+- Shows average max scroll % per content page
+- Answers: "Which content pages are users actually reading fully vs. abandoning early?"
+- Bar chart sorted by avg scroll %
+
+---
+
+## API ROUTES
+
+POST /api/analytics/button-click
+Body: { user_id, button_label, content_id }
+Insert into button_clicks table. Return 201.
+
+POST /api/analytics/video-watch
+Body: { user_id, video_id, content_id, watched_seconds }
+Insert into video_watch_events. Return 201.
+
+POST /api/analytics/scroll-depth
+Body: { user_id, content_id, max_scroll_percent }
+Insert into content_scroll_depth. Return 201.
+
+GET /api/analytics/summary
+Return JSON with:
+{
+  buttonClicks: [ { button_label, content_id, content_title, count } ],
+  videoWatch: [ { video_id, content_id, content_title, total_seconds, avg_seconds, sessions } ],
+  scrollDepth: [ { content_id, content_title, avg_scroll_percent } ]
+}
+Use JOINs with contents table to get titles.
+
+GET /api/content/[id]
+Return content row joined with chapter and book.
+
+GET /api/books
+Return all books with chapter count.
+
+GET /api/books/[id]
+Return book with chapters and contents nested.
+
+---
+
+## DB CLIENT
+
+Use the `pg` npm package. Create /lib/db.js:
+
+import { Pool } from 'pg';
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+export default pool;
+
+Use DATABASE_URL env variable (set in Replit Secrets).
+
+---
+
+## PERFORMANCE DECISIONS TO IMPLEMENT
+
+1. All analytics queries use the indexes defined above
+2. Analytics summary endpoint uses aggregation queries (not row-by-row JS)
+3. Scroll/video events are fire-and-forget (don't await on client, use navigator.sendBeacon for unload events)
+4. Dashboard fetches summary in a single API call, not multiple
+
+---
+
+## TECH STACK
+
+- Next.js 14 with App Router
+- Tailwind CSS for styling
+- pg (node-postgres) for DB
+- recharts for dashboard charts
+- No ORM — write raw SQL queries
+- All in one Next.js project (no separate Express server needed)
+
+---
+
+## ENV VARIABLES NEEDED (set in Replit Secrets)
+
+DATABASE_URL=postgresql://user:password@host:5432/dbname
+
+Use Neon.tech (free PostgreSQL) or Replit's built-in PostgreSQL for the DB.
+
+---
+
+## README.md TO GENERATE
+
+Include these sections:
+1. Architecture overview
+2. Database schema with explanation of why each table is structured this way
+3. Performance decisions: why indexes on content_id/button_label/video_id, why aggregation in SQL not JS, why sendBeacon for unload
+4. Third analytic justification: scroll depth answers "are users reading content or bouncing?" — critical for a learning platform
+5. Local setup instructions: npm install, set DATABASE_URL, npm run dev
+6. Trade-offs considered: raw SQL vs ORM, single server vs microservices, polling vs websockets for real-time
+
+---
+
+## STYLE REQUIREMENTS
+
+- Clean, minimal UI — white backgrounds, subtle borders, readable typography
+- Mobile responsive
+- Analytics dashboard must look like a real product dashboard, not a raw data dump
+- Use consistent color coding: purple for work/content, green for completed, blue for interactive
+
+Start by creating the Next.js app, installing dependencies (next, react, react-dom, pg, tailwindcss, recharts), setting up the DB connection, running migrations, seeding data, then building pages in this order: layout → home → book → content → analytics dashboard → API routes.

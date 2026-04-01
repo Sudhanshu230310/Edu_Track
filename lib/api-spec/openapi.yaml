@@ -1,0 +1,399 @@
+openapi: 3.1.0
+info:
+  title: Api
+  version: 0.1.0
+  description: Content Analytics Platform API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: books
+    description: Book operations
+  - name: content
+    description: Content operations
+  - name: analytics
+    description: Analytics operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /books:
+    get:
+      operationId: getBooks
+      tags: [books]
+      summary: List all books
+      responses:
+        "200":
+          description: List of books
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BookSummary"
+
+  /books/{id}:
+    get:
+      operationId: getBook
+      tags: [books]
+      summary: Get a book with chapters and contents
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Book with chapters and contents
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookDetail"
+        "404":
+          description: Book not found
+
+  /content/{id}:
+    get:
+      operationId: getContent
+      tags: [content]
+      summary: Get a single content page
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Content with chapter and book context
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContentDetail"
+        "404":
+          description: Content not found
+
+  /analytics/button-click:
+    post:
+      operationId: trackButtonClick
+      tags: [analytics]
+      summary: Track a button click event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ButtonClickBody"
+      responses:
+        "201":
+          description: Event recorded
+
+  /analytics/video-watch:
+    post:
+      operationId: trackVideoWatch
+      tags: [analytics]
+      summary: Track a video watch event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VideoWatchBody"
+      responses:
+        "201":
+          description: Event recorded
+
+  /analytics/scroll-depth:
+    post:
+      operationId: trackScrollDepth
+      tags: [analytics]
+      summary: Track scroll depth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScrollDepthBody"
+      responses:
+        "201":
+          description: Event recorded
+
+  /analytics/summary:
+    get:
+      operationId: getAnalyticsSummary
+      tags: [analytics]
+      summary: Get analytics summary dashboard data
+      responses:
+        "200":
+          description: Analytics summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyticsSummary"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    BookSummary:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        cover_url:
+          type: ["string", "null"]
+        chapter_count:
+          type: integer
+        created_at:
+          type: string
+      required:
+        - id
+        - title
+        - chapter_count
+        - created_at
+
+    Chapter:
+      type: object
+      properties:
+        id:
+          type: integer
+        book_id:
+          type: integer
+        title:
+          type: string
+        order_index:
+          type: integer
+        contents:
+          type: array
+          items:
+            $ref: "#/components/schemas/ContentSummary"
+        created_at:
+          type: string
+      required:
+        - id
+        - book_id
+        - title
+        - order_index
+        - contents
+        - created_at
+
+    ContentSummary:
+      type: object
+      properties:
+        id:
+          type: integer
+        chapter_id:
+          type: integer
+        title:
+          type: string
+        order_index:
+          type: integer
+        created_at:
+          type: string
+      required:
+        - id
+        - chapter_id
+        - title
+        - order_index
+        - created_at
+
+    BookDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        cover_url:
+          type: ["string", "null"]
+        created_at:
+          type: string
+        chapters:
+          type: array
+          items:
+            $ref: "#/components/schemas/Chapter"
+      required:
+        - id
+        - title
+        - created_at
+        - chapters
+
+    ContentDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+        chapter_id:
+          type: integer
+        title:
+          type: string
+        body:
+          type: ["string", "null"]
+        video_url:
+          type: ["string", "null"]
+        video_id:
+          type: ["string", "null"]
+        order_index:
+          type: integer
+        created_at:
+          type: string
+        chapter_title:
+          type: string
+        book_id:
+          type: integer
+        book_title:
+          type: string
+      required:
+        - id
+        - chapter_id
+        - title
+        - order_index
+        - created_at
+        - chapter_title
+        - book_id
+        - book_title
+
+    ButtonClickBody:
+      type: object
+      properties:
+        user_id:
+          type: string
+        button_label:
+          type: string
+        content_id:
+          type: integer
+      required:
+        - user_id
+        - button_label
+        - content_id
+
+    VideoWatchBody:
+      type: object
+      properties:
+        user_id:
+          type: string
+        video_id:
+          type: string
+        content_id:
+          type: integer
+        watched_seconds:
+          type: integer
+      required:
+        - user_id
+        - video_id
+        - content_id
+        - watched_seconds
+
+    ScrollDepthBody:
+      type: object
+      properties:
+        user_id:
+          type: string
+        content_id:
+          type: integer
+        max_scroll_percent:
+          type: integer
+      required:
+        - user_id
+        - content_id
+        - max_scroll_percent
+
+    ButtonClickStat:
+      type: object
+      properties:
+        button_label:
+          type: string
+        content_id:
+          type: integer
+        content_title:
+          type: string
+        count:
+          type: integer
+      required:
+        - button_label
+        - content_id
+        - content_title
+        - count
+
+    VideoWatchStat:
+      type: object
+      properties:
+        video_id:
+          type: string
+        content_id:
+          type: integer
+        content_title:
+          type: string
+        total_seconds:
+          type: integer
+        avg_seconds:
+          type: number
+        sessions:
+          type: integer
+      required:
+        - video_id
+        - content_id
+        - content_title
+        - total_seconds
+        - avg_seconds
+        - sessions
+
+    ScrollDepthStat:
+      type: object
+      properties:
+        content_id:
+          type: integer
+        content_title:
+          type: string
+        avg_scroll_percent:
+          type: number
+      required:
+        - content_id
+        - content_title
+        - avg_scroll_percent
+
+    AnalyticsSummary:
+      type: object
+      properties:
+        buttonClicks:
+          type: array
+          items:
+            $ref: "#/components/schemas/ButtonClickStat"
+        videoWatch:
+          type: array
+          items:
+            $ref: "#/components/schemas/VideoWatchStat"
+        scrollDepth:
+          type: array
+          items:
+            $ref: "#/components/schemas/ScrollDepthStat"
+      required:
+        - buttonClicks
+        - videoWatch
+        - scrollDepth

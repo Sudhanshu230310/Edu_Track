@@ -1,0 +1,47 @@
+﻿-- Seed sensible content pages for existing chapters.
+-- Run with:
+--   psql -U postgres -d content_insight -f scripts/seed-content-pages.sql
+
+-- Update overview text for each chapter.
+UPDATE contents SET body = E'Programming is the process of creating a set of instructions that tell a computer how to perform tasks. These instructions are written using programming languages such as Python, C++, and JavaScript. While each language has its own syntax and rules, they all follow common logical principles.\n\nAt its core, programming involves breaking down complex problems into smaller, manageable steps. This approach, known as algorithmic thinking, helps in solving problems efficiently and logically. It trains the mind to think in a structured and systematic way.\n\nThe basic building blocks of programming include variables, data types, loops, conditionals, and functions. Variables store data, loops repeat actions, conditionals make decisions, and functions help organize reusable code. Mastering these fundamentals is essential for becoming a good programmer.', order_index = 0 WHERE chapter_id = 5 AND title = 'Overview';
+UPDATE contents SET body = E'Data structures are ways of organizing and storing data so that it can be accessed and used efficiently. They are fundamental to writing optimized and scalable programs.\n\nDifferent types of data structures are used depending on the problem. Arrays store data in a fixed sequence, linked lists allow dynamic storage, stacks follow a Last-In-First-Out approach, and queues follow a First-In-First-Out method. Trees and graphs help represent hierarchical and complex relationships.\n\nUnderstanding data structures improves problem-solving skills and helps in writing efficient algorithms. It is a key concept for coding interviews and real-world software development.', order_index = 0 WHERE chapter_id = 6 AND title = 'Overview';
+UPDATE contents SET body = E'Energy is the ability to do work and is present in various forms such as kinetic, potential, thermal, and electrical energy. It plays a crucial role in everyday life and all physical processes.\n\nOne of the most important principles in physics is the conservation of energy, which states that energy cannot be created or destroyed, only transformed from one form to another. For example, a moving car converts chemical energy into kinetic energy.\n\nUnderstanding energy helps explain how machines work, how power is generated, and how natural processes occur. It forms the foundation for many applications in science and engineering.', order_index = 0 WHERE chapter_id = 4 AND title = 'Overview';
+UPDATE contents SET body = E'Newton’s Laws of Motion describe how objects move and respond to forces. These laws form the foundation of classical mechanics and help explain everyday phenomena.\n\nThe first law explains inertia, stating that an object remains at rest or in motion unless acted upon by an external force. The second law relates force, mass, and acceleration, showing how motion changes when a force is applied. The third law states that every action has an equal and opposite reaction.\n\nThese laws are used to understand motion in vehicles, sports, and even space travel, making them essential for physics and engineering.', order_index = 0 WHERE chapter_id = 3 AND title = 'Overview';
+UPDATE contents SET body = E'Algebra is a branch of mathematics that uses symbols and variables to represent numbers and relationships. It allows us to solve equations and understand patterns.\n\nInstead of working only with numbers, algebra introduces variables like x and y, making it possible to generalize problems. Concepts such as linear equations, polynomials, and factorization help in solving real-world problems.\n\nAlgebra builds a strong foundation for advanced mathematics and is widely used in science, engineering, economics, and computer science.', order_index = 0 WHERE chapter_id = 1 AND title = 'Overview';
+UPDATE contents SET body = E'Geometry is the study of shapes, sizes, angles, and spatial relationships. It helps us understand the physical world around us.\n\nBasic concepts include points, lines, angles, and shapes such as triangles, circles, and polygons. Geometry also involves calculating area, perimeter, and volume, as well as understanding properties of shapes.\n\nIt is widely used in architecture, engineering, design, and computer graphics, making it an important part of mathematics and real-life applications.', order_index = 0 WHERE chapter_id = 2 AND title = 'Overview';
+
+-- Update video lessons with real YouTube videos and stronger descriptions.
+UPDATE contents SET body = 'Watch the Algebra Basics video to see step-by-step equation solving and learn how to manipulate variables.', video_url = 'https://www.youtube.com/watch?v=yPYe8CnR-oM', video_id = 'yPYe8CnR-oM', order_index = 1 WHERE chapter_id = 1 AND title = 'Video Lesson';
+UPDATE contents SET body = 'Watch the Geometry video to explore angle relationships and triangle theorems with visual examples.', video_url = 'https://www.youtube.com/watch?v=aBgzWD4Yhdo', video_id = 'aBgzWD4Yhdo', order_index = 1 WHERE chapter_id = 2 AND title = 'Video Lesson';
+UPDATE contents SET body = 'Watch the Newton’s Laws video to connect motion, force, and inertia with everyday examples.', video_url = 'https://www.youtube.com/watch?v=1XVr4tYb4mA', video_id = '1XVr4tYb4mA', order_index = 1 WHERE chapter_id = 3 AND title = 'Video Lesson';
+UPDATE contents SET body = 'Watch the Energy Concepts video to understand kinetic and potential energy and how energy is conserved.', video_url = 'https://www.youtube.com/watch?v=L4F0eq9tF2w', video_id = 'L4F0eq9tF2w', order_index = 1 WHERE chapter_id = 4 AND title = 'Video Lesson';
+UPDATE contents SET body = 'Watch the Programming Basics video to learn variables, loops, and functions in a friendly introduction.', video_url = 'https://www.youtube.com/watch?v=lG8f2hFSJzU', video_id = 'lG8f2hFSJzU', order_index = 1 WHERE chapter_id = 5 AND title = 'Video Lesson';
+UPDATE contents SET body = 'Watch the Data Structures video to see arrays, stacks, and queues in action with easy examples.', video_url = 'https://www.youtube.com/watch?v=bum_19loj9A', video_id = 'bum_19loj9A', order_index = 1 WHERE chapter_id = 6 AND title = 'Video Lesson';
+
+-- Update practice problems with stronger mock questions.
+UPDATE contents SET body = E'Practice Problems:\n1. Solve x + 5 = 12.\n2. Simplify 3x - 2x + 7.\n3. Write the equation for x when 4x = 20.', order_index = 2 WHERE chapter_id = 1 AND title = 'Practice Problems';
+UPDATE contents SET body = E'Practice Problems:\n1. Find the missing angle in a triangle with angles 40° and 55°.\n2. Calculate the area of a rectangle with width 4 and height 7.\n3. Identify the type of triangle with sides 5, 5, and 8.', order_index = 2 WHERE chapter_id = 2 AND title = 'Practice Problems';
+UPDATE contents SET body = E'Practice Problems:\n1. Calculate the net force if mass = 3 kg and acceleration = 4 m/s^2.\n2. Describe what happens when an object has balanced forces.\n3. Give a real-world example of Newton’s third law.', order_index = 2 WHERE chapter_id = 3 AND title = 'Practice Problems';
+UPDATE contents SET body = E'Practice Problems:\n1. Compare the kinetic energy of a 2 kg object at 3 m/s and a 4 kg object at 2 m/s.\n2. Describe when potential energy is largest.\n3. Identify whether work is done when pushing a wall that does not move.', order_index = 2 WHERE chapter_id = 4 AND title = 'Practice Problems';
+UPDATE contents SET body = E'Practice Problems:\n1. Write a short code example that uses a loop to print numbers 1 to 5.\n2. Describe what a function does.\n3. Explain why variables are useful in code.', order_index = 2 WHERE chapter_id = 5 AND title = 'Practice Problems';
+UPDATE contents SET body = E'Practice Problems:\n1. List one use case for an array and one for a stack.\n2. Describe how a queue handles items.\n3. Explain why arrays support indexed access.', order_index = 2 WHERE chapter_id = 6 AND title = 'Practice Problems';
+
+-- Add quiz pages for each chapter.
+INSERT INTO contents (chapter_id, title, body, order_index)
+SELECT 1, 'Quiz', 'Test your algebra knowledge with this quick quiz.', 3
+WHERE NOT EXISTS (SELECT 1 FROM contents WHERE chapter_id = 1 AND title = 'Quiz');
+INSERT INTO contents (chapter_id, title, body, order_index)
+SELECT 2, 'Quiz', 'Assess your geometry understanding with these questions.', 3
+WHERE NOT EXISTS (SELECT 1 FROM contents WHERE chapter_id = 2 AND title = 'Quiz');
+INSERT INTO contents (chapter_id, title, body, order_index)
+SELECT 3, 'Quiz', 'Check your understanding of Newton’s laws with this short quiz.', 3
+WHERE NOT EXISTS (SELECT 1 FROM contents WHERE chapter_id = 3 AND title = 'Quiz');
+INSERT INTO contents (chapter_id, title, body, order_index)
+SELECT 4, 'Quiz', 'Review energy concepts with this quick set of questions.', 3
+WHERE NOT EXISTS (SELECT 1 FROM contents WHERE chapter_id = 4 AND title = 'Quiz');
+INSERT INTO contents (chapter_id, title, body, order_index)
+SELECT 5, 'Quiz', 'Evaluate your programming fundamentals with this quiz.', 3
+WHERE NOT EXISTS (SELECT 1 FROM contents WHERE chapter_id = 5 AND title = 'Quiz');
+INSERT INTO contents (chapter_id, title, body, order_index)
+SELECT 6, 'Quiz', 'Test your grasp of data structures with these sample questions.', 3
+WHERE NOT EXISTS (SELECT 1 FROM contents WHERE chapter_id = 6 AND title = 'Quiz');

@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Content Analytics Platform"
+version = "1.0.0"
+id = "artifacts/content-analytics"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24222
+
+[services.development]
+run = "pnpm --filter @workspace/content-analytics run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/content-analytics", "run", "build" ]
+publicDir = "artifacts/content-analytics/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24222"
+BASE_PATH = "/"

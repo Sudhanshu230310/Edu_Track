@@ -1,0 +1,97 @@
+---
+
+## UI DESIGN REFERENCE — EduTrack Visual Style
+
+Model the UI closely after a modern student portal dashboard with these exact design characteristics:
+
+### Color Palette
+- Sidebar background: #1E1B2E (deep dark purple-navy)
+- Main background: #F4F5FA (light gray-white)
+- Primary accent: #6C5CE7 (purple/indigo)
+- Secondary accent: #A29BFE (soft lavender)
+- Card background: #FFFFFF
+- Text primary: #2D3436
+- Text secondary: #636E72
+- Success green: #00B894
+- Warning amber: #FDCB6E
+- Danger red: #E17055
+
+### Layout Structure
+- Fixed left sidebar: 240px wide, dark (#1E1B2E), full height
+- Main content area: remaining width, light gray background (#F4F5FA)
+- Top navbar inside main area: white, shows page title + user avatar on right
+- Content padded: 32px all sides
+
+### Sidebar Design
+- EduTrack logo at top (white text, purple dot or icon)
+- Nav items with icons: Home, My Courses, Analytics, Progress, Settings
+- Active nav item: purple pill background (#6C5CE7), white text
+- Inactive: muted gray text (#A0A0B0), icon + label
+- Bottom of sidebar: user avatar + name + "Logout"
+
+### Home / Books Page
+- Greeting header: "Good morning, [User] 👋" in large text
+- Stats row: 3 metric cards (Courses Enrolled, Hours Watched, Completed Lessons)
+  - Each card: white, rounded-xl, subtle shadow, icon in colored circle, big number, small label
+- Section heading: "Continue Learning" with "View All" link
+- Course cards in a 3-column grid:
+  - White card, rounded-2xl
+  - Top: colored banner or thumbnail (use gradient based on book index)
+  - Book title in bold
+  - Chapter count in muted text
+  - Progress bar (purple fill, gray track, show % complete)
+  - "Continue" button in purple
+
+### Content Page (/content/[id])
+- Left column (65%): 
+  - Video player — 16:9 ratio, rounded-xl, dark background, YouTube embed
+  - Below video: content title (24px bold), breadcrumb above it
+  - Content body text in readable 16px, line-height 1.8
+- Right column (35%):
+  - "Course Progress" card with chapter list, checkmarks for completed
+  - Action buttons stacked vertically:
+    ✓ Mark as Complete — filled purple button
+    📝 Take Quiz — outlined purple button  
+    ⬇ Download Notes — ghost gray button
+  - Each button full width, 48px height, rounded-xl
+
+### Analytics Dashboard (/analytics)
+- Page title: "Analytics Overview"
+- Top: 3 summary metric cards (Total Clicks, Total Watch Time, Avg Scroll Depth)
+- Charts section — 2 column grid:
+  - Left: Bar chart "Button Clicks by Type" (recharts BarChart, purple bars)
+  - Right: Bar chart "Watch Time by Content" (teal bars)
+- Bottom: Full-width table "Scroll Depth by Content"
+  - Columns: Content Title | Avg Scroll % | Progress bar visual | Status badge
+  - Status: >75% = "Engaged" (green badge), 40-75% = "Partial" (amber), <40% = "Bounced" (red)
+
+### Typography
+- Font: Inter (import from Google Fonts)
+- Headings: 600 weight
+- Body: 400 weight
+- All border-radius: use rounded-xl (12px) for cards, rounded-full for badges/pills
+
+### Tailwind Config Additions
+Extend tailwind.config.js with:
+colors: {
+  brand: {
+    DEFAULT: '#6C5CE7',
+    light: '#A29BFE',
+    dark: '#4834D4',
+  },
+  sidebar: '#1E1B2E',
+  surface: '#F4F5FA',
+}
+
+### Component Patterns
+- All cards: bg-white rounded-2xl shadow-sm p-6
+- All primary buttons: bg-brand text-white rounded-xl px-6 py-3 hover:bg-brand-dark
+- Progress bars: h-2 rounded-full bg-gray-100, inner div bg-brand
+- Metric cards: flex items-center gap-4, icon in 48x48 rounded-xl colored bg, number in text-2xl font-semibold
+- Sidebar nav items: flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer
+
+### Responsive
+- Sidebar collapses to icon-only on screens < 1024px
+- Cards grid: 3 cols on xl, 2 on md, 1 on sm
+
+Make the UI feel polished, modern, and premium — like a real SaaS education product, not a tutorial project.

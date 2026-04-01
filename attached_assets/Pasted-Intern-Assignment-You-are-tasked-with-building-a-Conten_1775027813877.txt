@@ -1,0 +1,119 @@
+Intern Assignment 
+You are tasked with building a Content Analytics Platform — a web application that
+serves structured learning content Books 
+→
+ Chapters 
+→
+ Content) and tracks how
+users interact with it in real time.
+The goal of this assignment is not just to build a working product, but to
+demonstrate sound engineering decisions, particularly around data architecture,
+query performance, and analytics pipeline design. There are no prescribed
+solutions. You are expected to research, reason through trade-offs, and defend
+your choices in writing.
+What You Need to Build
+1. Frontend — Content Viewer (Next.js)
+Build a content browsing experience with the following hierarchy:
+Books
+└── Chapters
+└── Content (Text, Videos, Interactive Buttons)
+Each content page must include at minimum:
+One or more video players (embedded or native)
+One or more interactive buttons (e.g. "Mark as Complete", "Take Quiz",
+"Download Notes")
+A readable content body
+The UI should feel like a real product. Invest in usability and visual clarity.
+2. Analytics Layer — 3 Core Metrics
+You must implement all three of the following analytics:
+A. Button Click Tracking
+1
+Intern Assignment
+Track which button a user clicked, on which chapter or content page, and at what
+time.
+Field
+user_id
+button_label
+content_id
+clicked_at
+Description
+Identifier for the user (session-based is acceptable)
+The label or ID of the button clicked
+The content page where the click occurred
+UTC timestamp of the click
+B. Video Watch Time Tracking
+Track how long a user watched a video. Capture meaningful watch events — not
+just a "video started" signal.
+Field
+user_id
+video_id
+content_id
+Description
+Identifier for the user
+Unique ID of the video
+The content page containing the video
+watched_seconds 
+Total seconds watched in a session
+recorded_at
+UTC timestamp
+C. A Third Analytic of Your Choice
+Design and implement one additional analytic that you believe adds meaningful
+insight to the platform. Justify your choice in the README by explaining what
+business or product question it answers.
+3. Analytics Dashboard
+Build a dedicated analytics view (a separate 
+/analytics
+ route) that displays the
+collected data. This is where your architecture and engineering decisions will be
+most closely evaluated.
+At minimum, the dashboard must display:
+Button click counts grouped by button and content page
+Average and total watch time per video
+2
+Intern Assignment
+Your custom third metric, visualized appropriately
+4. Backend — Node.js API
+Build a REST or tRPC API in Node.js to receive and serve analytics events
+Use PostgreSQL as your primary database
+All architectural and schema decisions are left entirely to you
+Technical Requirements
+Requirement
+Detail
+Frontend Framework Next.js App Router preferred)
+Backend
+Database
+Hosting
+Repository
+Node.js Next.js API routes or a separate Express/Fastify server)
+PostgreSQL
+Vercel, Railway, Render, Fly.io, or any free-tier service
+Public GitHub repository
+Collaborator
+Add 
+kartik150704
+ as a collaborator before submission
+Evaluation Criteria
+This assignment is deliberately open-ended. You will be evaluated on how you
+solve the problem, not just whether it works.
+Primary — Architecture and Performance
+This is the most important dimension of the evaluation.
+How did you model the analytics data, and why?
+How fast are your analytics queries, and what did you do to keep them fast?
+How do you handle high-frequency events?
+Does your architecture hold up under scale, even if the current data volume is
+small?
+3
+Intern Assignment
+Your README must explain the decisions you made and the trade-offs you
+considered. An undocumented architecture will not score well even if the
+implementation is technically sound.
+Secondary — Product Quality
+Is the UI clean and intuitive?
+Does the analytics dashboard present data in a way that is genuinely useful
+and readable?
+Is the third analytic a thoughtful addition or an afterthought?
+Baseline — Completeness
+All three analytics are implemented and functional
+The application is live at a public URL
+The repository is on GitHub with 
+kartik150704
+ added as a collaborator
